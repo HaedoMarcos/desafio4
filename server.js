@@ -1,52 +1,53 @@
+const fs = require(`fs`);
 const express = require(`express`);
+const multer = require(`multer`);
 const app = express();
 
-const routePersona = express.Router();
-const routeProducto = express.Router();
-routeProducto.use(express.json());
-routePersona.use(express.json());
+app.use(express.static(`public`));
+app.use(express.urlencoded({ extended: true }));
 
-app.use(`/productos`, routeProducto);
-app.use(`/persona`, routePersona);
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-let productos = [
-  {
-    title: "AirMAX 270",
-    price: 290,
-    thumbnail:
-      "https://static.nike.com/a/images/t_PDP_1280_v1/f_auto,q_auto:eco/awjogtdnqxniqqk0wpgf/calzado-air-max-270-KkLcGR.png",
-    id: 1,
-  },
-  {
-    title: "AirMAX 90",
-    price: 199,
-    thumbnail:
-      "https://static.nike.com/a/images/t_PDP_1280_v1/f_auto,q_auto:eco/08f113fb-396f-4445-a89b-f82752a7cb82/air-max-90-g-golf-shoe-hxtVmz.png",
-    id: 2,
-  },
-  {
-    title: "AirMAX 97",
-    price: 299,
-    thumbnail:
-      "https://static.nike.com/a/images/t_PDP_1280_v1/f_auto,q_auto:eco/08f113fb-396f-4445-a89b-f82752a7cb82/air-max-97-g-golf-shoe-hxtVmz.png",
-    id: 3,
-  },
-];
+app.set(`views`, `./views`);
+app.set("view engine", "ejs");
 
-routeProducto.get(`/listar`, (req, res) => {
-  res.json(productos);
-});
-routeProducto.post(`/guardar`, (req, res) => {
+let productos = [];
+
+app.post("/productos", (req, res) => {
   productos.push(req.body);
-  res.json(productos);
+  console.log(productos);
+  res.redirect("/");
 });
 
-routeProducto.get(`/id`, (req, res) => {
-  let producto = productos.find((item) => item.id === id);
-  res.json(producto);
+app.get("/", (req, res) => {
+  res.render("formulario", { productos });
 });
 
-routeProducto.delete((`/id`, (req, res) => {}));
+// app.get("/productos", (req, res) => {
+//   res.json(productos);
+// });
+
+// routeProducto.get("/productos/:id", (req, res) => {
+//   const productId = req.params.id;
+//   res.json(productos);
+// });
+// routeProducto.put("/api/productos/:id", (req, res) => {
+//   const productId = req.params.id;
+//   const filetoupdate = req.body;
+//   res.json(productos);
+// });
+// routeProducto.post("/productos", (req, res, next) => {
+//   const { nombre, precio, imagen } = req.body;
+//   const id = 3;
+//   let newProduct = { nombre, precio, imagen, id };
+//   productos.push(newProduct);
+//   res.status(201).send("Producto agregado correctamente");
+// });
+// routeProducto.delete("/api/productos/:id", (req, res) => {
+//   const productId = req.params.id;
+//   res.json(productos);
+// });
 
 const PORT = 8080;
 const server = app.listen(PORT, () => {
